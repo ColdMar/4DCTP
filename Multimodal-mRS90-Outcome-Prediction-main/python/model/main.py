@@ -57,7 +57,7 @@ metadata_csv[cfg.continuous_features] = continuous_preprocessed[cfg.continuous_f
 
 # Importing patient dictionary
 print("[INFO] loading patient dictionary...")
-with open(cfg.params['dictFile_3D'], 'rb') as output:
+with open(cfg.params['dictFile'], 'rb') as output:
     partition = pickle.load(output)
 
 # Calling training generator
@@ -93,9 +93,11 @@ for w in range(cfg.params['timepoints']):
     # Create inputs and get model outputs
     i = Input(shape=(*cfg.params['dim'], 1))
     o = base_network(i)
+    if isinstance(o, (list, tuple)):
+        o = o[0]
     # Append results
     inputs.append(i)
-    outputs.append(o[0])
+    outputs.append(o)
 
 # Concatenate latent vectors and skip connections
 imaging_encoded = Concatenate(axis=1)(outputs)
